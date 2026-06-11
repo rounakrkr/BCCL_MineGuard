@@ -1,4 +1,4 @@
-import mysql.connector
+import pymysql
 import os
 from dotenv import load_dotenv
 
@@ -6,11 +6,14 @@ load_dotenv()
 
 try:
     # Connect to MySQL server
-    db = mysql.connector.connect(
+    db = pymysql.connect(
         host=os.getenv("MYSQL_HOST", "localhost"),
         user=os.getenv("MYSQL_USER", "root"),
         password=os.getenv("MYSQL_PASSWORD", "12345"),
-        port=int(os.getenv("MYSQL_PORT", 3306))
+        port=int(os.getenv("MYSQL_PORT", 3306)),
+        database="test",
+        ssl={"ssl":{}},
+        autocommit=True
     )
     cursor = db.cursor()
 
@@ -19,11 +22,12 @@ try:
     with open(schema_path, 'r') as f:
         sql_commands = f.read()
 
-    # Execute all statements in the schema file
-    for result in cursor.execute(sql_commands, multi=True):
-        pass 
+    # Execute all statements in the schema file (split by ;)
+    statements = sql_commands.split(';')
+    for statement in statements:
+        if statement.strip():
+            cursor.execute(statement)
 
-    db.commit()
     cursor.close()
     db.close()
     print("Success: Database 'mineguard_db' created and dummy data inserted!")
