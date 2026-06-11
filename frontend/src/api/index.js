@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:5001/api', // Hardcoded for local dev for now
+  baseURL: import.meta.env.VITE_API_URL || 'http://127.0.0.1:5001/api',
 });
 
 export const getMines = () => api.get('/mines');
