@@ -7,7 +7,7 @@ alert_bp = Blueprint('alert_bp', __name__)
 def get_mine_alerts(mine_id):
     try:
         conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
         
         # Get last 10 alerts for this mine
         cursor.execute("""

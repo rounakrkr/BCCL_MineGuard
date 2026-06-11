@@ -18,7 +18,7 @@ def receive_sensor_data():
             return jsonify({"error": "device_id is required"}), 400
             
         conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
         
         # Look up mine by device_id
         cursor.execute("SELECT id FROM mines WHERE device_id = %s", (device_id,))

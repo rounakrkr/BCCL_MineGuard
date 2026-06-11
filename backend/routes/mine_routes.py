@@ -7,7 +7,7 @@ mine_bp = Blueprint('mine_bp', __name__)
 def get_all_mines():
     try:
         conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
         
         # Get all mines
         cursor.execute("SELECT * FROM mines ORDER BY location ASC, mine_name ASC")
@@ -34,7 +34,7 @@ def get_all_mines():
 def get_mine_details(mine_id):
     try:
         conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        cursor = conn.cursor()
         
         # Get mine details
         cursor.execute("SELECT * FROM mines WHERE id = %s", (mine_id,))
