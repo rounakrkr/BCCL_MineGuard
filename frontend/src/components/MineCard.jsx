@@ -47,23 +47,25 @@ const MineCard = ({ mine }) => {
       </div>
 
       <div className="grid grid-cols-2 gap-3 mb-5">
-        <div className="bg-white/40 rounded-xl p-3 border border-white/50 shadow-sm">
+        <div className="bg-white/40 rounded-xl p-3 border border-white/50 shadow-sm flex flex-col justify-center">
           <div className="flex items-center gap-1.5 text-stone-500 mb-1">
             <Wind className="w-4 h-4 text-orange-400" />
             <span className="text-[10px] uppercase tracking-wider font-bold">Methane</span>
           </div>
-          <p className="text-2xl font-bold text-stone-700">
-            {reading.methane_ppm ? Number(reading.methane_ppm).toFixed(1) : '--'} <span className="text-[10px] text-stone-400 font-normal">PPM</span>
-          </p>
+          <div className="flex items-baseline gap-1 whitespace-nowrap">
+            <span className="text-xl sm:text-2xl font-bold text-stone-700 tracking-tight">{reading.methane_ppm ? Number(reading.methane_ppm).toFixed(1) : '--'}</span>
+            <span className="text-[10px] text-stone-400 font-normal">PPM</span>
+          </div>
         </div>
-        <div className="bg-white/40 rounded-xl p-3 border border-white/50 shadow-sm">
+        <div className="bg-white/40 rounded-xl p-3 border border-white/50 shadow-sm flex flex-col justify-center">
           <div className="flex items-center gap-1.5 text-stone-500 mb-1">
             <Thermometer className="w-4 h-4 text-orange-400" />
             <span className="text-[10px] uppercase tracking-wider font-bold">Temp</span>
           </div>
-          <p className="text-2xl font-bold text-stone-700">
-            {reading.temperature_c ? Number(reading.temperature_c).toFixed(1) : '--'} <span className="text-[10px] text-stone-400 font-normal">°C</span>
-          </p>
+          <div className="flex items-baseline gap-1 whitespace-nowrap">
+            <span className="text-xl sm:text-2xl font-bold text-stone-700 tracking-tight">{reading.temperature_c ? Number(reading.temperature_c).toFixed(1) : '--'}</span>
+            <span className="text-[10px] text-stone-400 font-normal">°C</span>
+          </div>
         </div>
       </div>
 
