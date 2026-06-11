@@ -13,16 +13,20 @@ def get_all_mines():
         cursor.execute("SELECT * FROM mines ORDER BY location ASC, mine_name ASC")
         mines = cursor.fetchall()
         
-        # For each mine, fetch the latest reading
-        for mine in mines:
-            cursor.execute("""
-                SELECT methane_ppm, co_ppm, temperature_c, humidity_percent, status, recorded_at 
+        # Fetch all latest readings in one query using MAX(id)
+        cursor.execute("""
+            SELECT sr.mine_id, sr.methane_ppm, sr.co_ppm, sr.temperature_c, sr.humidity_percent, sr.status, sr.recorded_at 
+            FROM sensor_readings sr
+            INNER JOIN (
+                SELECT mine_id, MAX(id) as max_id 
                 FROM sensor_readings 
-                WHERE mine_id = %s 
-                ORDER BY recorded_at DESC LIMIT 1
-            """, (mine['id'],))
-            latest = cursor.fetchone()
-            mine['latest_reading'] = latest if latest else None
+                GROUP BY mine_id
+            ) latest ON sr.id = latest.max_id
+        """)
+        latest_readings = {row['mine_id']: row for row in cursor.fetchall()}
+        
+        for mine in mines:
+            mine['latest_reading'] = latest_readings.get(mine['id'])
             
         cursor.close()
         conn.close()
