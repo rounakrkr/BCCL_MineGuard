@@ -50,9 +50,10 @@ def get_insight():
         
         chat_completion = client.chat.completions.create(
             messages=[{"role": "user", "content": prompt}],
-            model="llama-3.1-8b-instant",
+            model="llama3-8b-8192",
             max_tokens=150,
-            temperature=0.4
+            temperature=0.4,
+            timeout=8.0  # Stop hanging after 8 seconds
         )
         
         insight = chat_completion.choices[0].message.content
