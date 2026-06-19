@@ -22,58 +22,56 @@ def receive_sensor_data():
         conn = get_db_connection()
         cursor = conn.cursor()
         
-        # Look up mine by device_id
-        cursor.execute("SELECT id FROM mines WHERE device_id = %s", (device_id,))
-        mine = cursor.fetchone()
+        # Fetch all mines to mirror the data across the dashboard
+        cursor.execute("SELECT id FROM mines")
+        mines = cursor.fetchall()
         
-        if not mine:
+        if not mines:
             cursor.close()
             conn.close()
-            return jsonify({"error": "Unknown device_id"}), 404
+            return jsonify({"error": "No mines found in database"}), 404
             
-        mine_id = mine['id']
-        
-        # Calculate status
+        # Calculate status once
         status = get_overall_status(methane, co, temp, humidity, smoke, fire)
-        
-        # Insert reading
-        cursor.execute("""
-            INSERT INTO sensor_readings 
-            (mine_id, device_id, methane_ppm, co_ppm, smoke_ppm, fire_detected, temperature_c, humidity_percent, status)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """, (mine_id, device_id, methane, co, smoke, fire, temp, humidity, status))
-        
-        reading_id = cursor.lastrowid
-        
-        # Check for alerts
         alert_triggered = False
-        if status in ['WARNING', 'DANGER']:
-            alert_triggered = True
+        
+        # Insert the reading and alerts for EVERY mine
+        for mine in mines:
+            mine_id = mine['id']
             
-            # Simple logic to log which sensor caused the alert
-            if methane >= THRESHOLDS['methane_ppm']['warning']:
-                cursor.execute("""
-                    INSERT INTO alerts (mine_id, alert_type, sensor_value, threshold_value, severity)
-                    VALUES (%s, %s, %s, %s, %s)
-                """, (mine_id, 'HIGH_METHANE', methane, THRESHOLDS['methane_ppm']['warning'], status))
+            cursor.execute("""
+                INSERT INTO sensor_readings 
+                (mine_id, device_id, methane_ppm, co_ppm, smoke_ppm, fire_detected, temperature_c, humidity_percent, status)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, (mine_id, device_id, methane, co, smoke, fire, temp, humidity, status))
+            
+            # Check for alerts
+            if status in ['WARNING', 'DANGER']:
+                alert_triggered = True
                 
-            if co >= THRESHOLDS['co_ppm']['warning']:
-                cursor.execute("""
-                    INSERT INTO alerts (mine_id, alert_type, sensor_value, threshold_value, severity)
-                    VALUES (%s, %s, %s, %s, %s)
-                """, (mine_id, 'HIGH_CO', co, THRESHOLDS['co_ppm']['warning'], status))
+                if methane >= THRESHOLDS['methane_ppm']['warning']:
+                    cursor.execute("""
+                        INSERT INTO alerts (mine_id, alert_type, sensor_value, threshold_value, severity)
+                        VALUES (%s, %s, %s, %s, %s)
+                    """, (mine_id, 'HIGH_METHANE', methane, THRESHOLDS['methane_ppm']['warning'], status))
                 
-            if smoke >= THRESHOLDS['smoke_ppm']['warning']:
-                cursor.execute("""
-                    INSERT INTO alerts (mine_id, alert_type, sensor_value, threshold_value, severity)
-                    VALUES (%s, %s, %s, %s, %s)
-                """, (mine_id, 'HIGH_SMOKE', smoke, THRESHOLDS['smoke_ppm']['warning'], status))
-                
-            if fire:
-                cursor.execute("""
-                    INSERT INTO alerts (mine_id, alert_type, sensor_value, threshold_value, severity)
-                    VALUES (%s, %s, %s, %s, %s)
-                """, (mine_id, 'FIRE_DETECTED', 1, 1, 'DANGER'))
+                if co >= THRESHOLDS['co_ppm']['warning']:
+                    cursor.execute("""
+                        INSERT INTO alerts (mine_id, alert_type, sensor_value, threshold_value, severity)
+                        VALUES (%s, %s, %s, %s, %s)
+                    """, (mine_id, 'HIGH_CO', co, THRESHOLDS['co_ppm']['warning'], status))
+                    
+                if smoke >= THRESHOLDS['smoke_ppm']['warning']:
+                    cursor.execute("""
+                        INSERT INTO alerts (mine_id, alert_type, sensor_value, threshold_value, severity)
+                        VALUES (%s, %s, %s, %s, %s)
+                    """, (mine_id, 'HIGH_SMOKE', smoke, THRESHOLDS['smoke_ppm']['warning'], status))
+                    
+                if fire:
+                    cursor.execute("""
+                        INSERT INTO alerts (mine_id, alert_type, sensor_value, threshold_value, severity)
+                        VALUES (%s, %s, %s, %s, %s)
+                    """, (mine_id, 'FIRE_DETECTED', 1, 1, 'DANGER'))
                 
         conn.commit()
         cursor.close()
