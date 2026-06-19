@@ -20,8 +20,8 @@ def receive_sensor_data():
             # Update the heartbeat for real hardware
             last_real_data_time = current_time
         else:
-            # If simulated data arrives, check if real hardware is alive (heard from within 25 seconds)
-            if current_time - last_real_data_time < 25:
+            # If simulated data arrives, check if real hardware is alive (heard from within 30 seconds)
+            if current_time - last_real_data_time < 30:
                 return jsonify({"status": "ignored", "message": "Hardware is active. Dropping fake data."}), 200
 
         device_id = data.get('device_id')

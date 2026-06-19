@@ -10,24 +10,21 @@ print("Starting sensor simulation. Press Ctrl+C to stop.")
 try:
     while True:
         for device in DEVICES:
-            # Simulate mostly safe, occasionally warning values
-            methane = random.uniform(200, 3000)
-            co = random.uniform(5, 60)
-            temp = random.uniform(24, 36)
-            humidity = random.uniform(55, 88)
+            # Generate realistic data hovering tightly around your ambient room values
+            # Methane: ~3000, CO: ~240, Temp: ~24, Hum: ~57, Smoke: ~3200
+            methane = random.uniform(2950.0, 3150.0)
+            co = random.uniform(230.0, 250.0)
+            temp = random.uniform(23.5, 24.5)
+            humidity = random.uniform(56.0, 59.0)
+            smoke = random.uniform(3150.0, 3350.0)
             
-            # Occasionally spike danger for demo purposes on specific devices
-            if device == "ESP_004" and random.random() < 0.1:
-                methane = random.uniform(5000, 6000)
-                co = random.uniform(100, 150)
-                
             payload = {
                 "device_id": "ESP_001",  # Send to ESP_001 so it mirrors to all mines
                 "methane_ppm": round(methane, 1),
                 "co_ppm": round(co, 1),
                 "temperature_c": round(temp, 1),
                 "humidity_percent": round(humidity, 1),
-                "smoke_ppm": round(random.uniform(1000, 3200), 1),
+                "smoke_ppm": round(smoke, 1),
                 "fire_detected": False,
                 "is_simulated": True
             }
