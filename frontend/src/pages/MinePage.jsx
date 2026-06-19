@@ -29,7 +29,7 @@ const MinePage = () => {
 
   useEffect(() => {
     fetchData();
-    const interval = setInterval(fetchData, 5000);
+    const interval = setInterval(fetchData, 2000);
     return () => clearInterval(interval);
   }, [id]);
 

@@ -37,6 +37,14 @@ def get_insight():
         1. Overall safety assessment
         2. Simple actionable recommendation
         
+        CRITICAL CONTEXT ABOUT SENSORS: 
+        The sensors in this deployment are uncalibrated and have high resting ambient readings. 
+        You MUST evaluate safety strictly based on these thresholds:
+        - Methane: SAFE is below 3500 PPM.
+        - Carbon Monoxide: SAFE is below 300 PPM.
+        - Smoke: SAFE is below 3800 PPM.
+        If the current readings are below these thresholds, explicitly state that gas levels are normal and safe, and do not raise any concern about them being high.
+        
         CRITICAL INSTRUCTION: Write in very simple, plain English that an older government officer in India can easily understand. Avoid heavy technical jargon. Keep the tone respectful and direct. The length should be around 60-80 words. Do not use bullet points.
         """
         
