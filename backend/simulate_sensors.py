@@ -3,7 +3,7 @@ import random
 import time
 
 DEVICES = ["ESP_001", "ESP_002", "ESP_003", "ESP_004", "ESP_005", "ESP_006", "ESP_007", "ESP_008"]
-SERVER = "http://127.0.0.1:5001/api/sensor/data"
+SERVER = "https://bccl-mineguard.onrender.com/api/sensor/data"
 
 print("Starting sensor simulation. Press Ctrl+C to stop.")
 
@@ -30,7 +30,7 @@ try:
             }
             
             try:
-                response = requests.post(SERVER, json=payload, timeout=2)
+                response = requests.post(SERVER, json=payload, timeout=20)
                 if response.status_code == 200:
                     status = response.json().get('safety_status', 'UNKNOWN')
                     print(f"Sent data for {device} - Status: {status}")
@@ -38,6 +38,9 @@ try:
                     print(f"Error for {device}: Status code {response.status_code}")
             except Exception as e:
                 print(f"Failed to connect to server: {e}")
+                
+            # Add a small 1.5 second delay between each sensor to prevent overwhelming the free Render server CPU
+            time.sleep(1.5)
                 
             time.sleep(1) # delay between devices to spread requests
             

@@ -13,6 +13,8 @@ def receive_sensor_data():
         co = data.get('co_ppm')
         temp = data.get('temperature_c')
         humidity = data.get('humidity_percent')
+        smoke = data.get('smoke_ppm', 0)
+        fire = data.get('fire_detected', False)
         
         if not device_id:
             return jsonify({"error": "device_id is required"}), 400
@@ -32,14 +34,14 @@ def receive_sensor_data():
         mine_id = mine['id']
         
         # Calculate status
-        status = get_overall_status(methane, co, temp, humidity)
+        status = get_overall_status(methane, co, temp, humidity, smoke, fire)
         
         # Insert reading
         cursor.execute("""
             INSERT INTO sensor_readings 
-            (mine_id, device_id, methane_ppm, co_ppm, temperature_c, humidity_percent, status)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
-        """, (mine_id, device_id, methane, co, temp, humidity, status))
+            (mine_id, device_id, methane_ppm, co_ppm, smoke_ppm, fire_detected, temperature_c, humidity_percent, status)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (mine_id, device_id, methane, co, smoke, fire, temp, humidity, status))
         
         reading_id = cursor.lastrowid
         
@@ -60,6 +62,18 @@ def receive_sensor_data():
                     INSERT INTO alerts (mine_id, alert_type, sensor_value, threshold_value, severity)
                     VALUES (%s, %s, %s, %s, %s)
                 """, (mine_id, 'HIGH_CO', co, THRESHOLDS['co_ppm']['warning'], status))
+                
+            if smoke >= THRESHOLDS['smoke_ppm']['warning']:
+                cursor.execute("""
+                    INSERT INTO alerts (mine_id, alert_type, sensor_value, threshold_value, severity)
+                    VALUES (%s, %s, %s, %s, %s)
+                """, (mine_id, 'HIGH_SMOKE', smoke, THRESHOLDS['smoke_ppm']['warning'], status))
+                
+            if fire:
+                cursor.execute("""
+                    INSERT INTO alerts (mine_id, alert_type, sensor_value, threshold_value, severity)
+                    VALUES (%s, %s, %s, %s, %s)
+                """, (mine_id, 'FIRE_DETECTED', 1, 1, 'DANGER'))
                 
         conn.commit()
         cursor.close()

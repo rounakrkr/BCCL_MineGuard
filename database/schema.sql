@@ -1,8 +1,10 @@
+-- schema.sql
+
 CREATE DATABASE IF NOT EXISTS mineguard_db;
 USE mineguard_db;
 
 -- Table 1: All registered coal mines
-CREATE TABLE IF NOT EXISTS mines (
+CREATE TABLE mines (
   id INT AUTO_INCREMENT PRIMARY KEY,
   mine_name VARCHAR(100) NOT NULL,           -- e.g. "Jharia Mine Block A"
   mine_code VARCHAR(20) UNIQUE NOT NULL,      -- e.g. "JH-A"
@@ -16,24 +18,26 @@ CREATE TABLE IF NOT EXISTS mines (
 );
 
 -- Table 2: All sensor readings (time-series data)
-CREATE TABLE IF NOT EXISTS sensor_readings (
+CREATE TABLE sensor_readings (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   mine_id INT NOT NULL,
   device_id VARCHAR(50),
   methane_ppm DECIMAL(8,2),                  -- MQ-4 reading in PPM
   co_ppm DECIMAL(8,2),                       -- MQ-7 reading in PPM
+  smoke_ppm DECIMAL(8,2),                    -- MQ-2 reading in PPM
   temperature_c DECIMAL(5,2),                -- DHT11 temperature
   humidity_percent DECIMAL(5,2),             -- DHT11 humidity
+  fire_detected BOOLEAN DEFAULT FALSE,       -- IR Flame Sensor
   status ENUM('SAFE','WARNING','DANGER') DEFAULT 'SAFE',
   recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (mine_id) REFERENCES mines(id)
 );
 
 -- Table 3: Alert log
-CREATE TABLE IF NOT EXISTS alerts (
+CREATE TABLE alerts (
   id INT AUTO_INCREMENT PRIMARY KEY,
   mine_id INT NOT NULL,
-  alert_type VARCHAR(50),                    -- e.g. "HIGH_METHANE", "HIGH_CO"
+  alert_type VARCHAR(50),                    -- e.g. "HIGH_METHANE", "FIRE_DETECTED"
   sensor_value DECIMAL(8,2),
   threshold_value DECIMAL(8,2),
   severity ENUM('WARNING','DANGER'),
@@ -42,15 +46,11 @@ CREATE TABLE IF NOT EXISTS alerts (
   FOREIGN KEY (mine_id) REFERENCES mines(id)
 );
 
--- Seed data: 8 dummy mines
+-- Seed data: 5 dummy mines
 INSERT INTO mines (mine_name, mine_code, location, latitude, longitude, depth_meters, active_workers, device_id)
 VALUES
   ('Jharia Block A', 'JH-A', 'Jharia, Jharkhand', 23.7500, 86.4200, 120, 45, 'ESP_001'),
   ('Kusunda Mine', 'KS-1', 'Kusunda, Dhanbad', 23.7891, 86.4532, 95, 38, 'ESP_002'),
   ('Katras Colliery', 'KT-1', 'Katras, Jharkhand', 23.8012, 86.3890, 140, 52, 'ESP_003'),
   ('Sijua Mine', 'SJ-2', 'Sijua, Jharkhand', 23.7234, 86.4780, 110, 29, 'ESP_004'),
-  ('Bastacolla Colliery', 'BC-9', 'Bastacolla Area 9, Dhanbad', 23.7850, 86.4150, 95, 65, 'ESP_005'),
-  ('Putki Balihari', 'PB-1', 'Putki, Dhanbad', 23.7650, 86.3850, 150, 60, 'ESP_006'),
-  ('Lodna Colliery', 'LD-1', 'Lodna, Jharkhand', 23.7320, 86.4110, 105, 48, 'ESP_007'),
-  ('Moonidih Project', 'MN-1', 'Moonidih, Dhanbad', 23.7445, 86.3500, 200, 75, 'ESP_008')
-ON DUPLICATE KEY UPDATE mine_name=VALUES(mine_name);
+  ('Bhaga Colliery', 'BH-1', 'Bhaga, Dhanbad', 23.8134, 86.4321, 88, 41, 'ESP_005');
