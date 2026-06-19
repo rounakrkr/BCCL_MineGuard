@@ -52,6 +52,7 @@ def receive_sensor_data():
         alert_triggered = False
         
         # Insert the reading and alerts for EVERY mine
+        reading_id = None
         for mine in mines:
             mine_id = mine['id']
             
@@ -60,6 +61,8 @@ def receive_sensor_data():
                 (mine_id, device_id, methane_ppm, co_ppm, smoke_ppm, fire_detected, temperature_c, humidity_percent, status)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
             """, (mine_id, device_id, methane, co, smoke, fire, temp, humidity, status))
+            
+            reading_id = cursor.lastrowid
             
             # Check for alerts
             if status in ['WARNING', 'DANGER']:
