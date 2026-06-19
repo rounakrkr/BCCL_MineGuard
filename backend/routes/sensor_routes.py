@@ -1,13 +1,29 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, request, jsonify
 from models.db import get_db_connection
 from utils.thresholds import get_overall_status, THRESHOLDS
+import time
 
 sensor_bp = Blueprint('sensor_bp', __name__)
+
+last_real_data_time = 0
 
 @sensor_bp.route('/api/sensor/data', methods=['POST'])
 def receive_sensor_data():
     try:
+        global last_real_data_time
         data = request.json
+        
+        is_simulated = data.get('is_simulated', False)
+        current_time = time.time()
+        
+        if not is_simulated:
+            # Update the heartbeat for real hardware
+            last_real_data_time = current_time
+        else:
+            # If simulated data arrives, check if real hardware is alive (heard from within 25 seconds)
+            if current_time - last_real_data_time < 25:
+                return jsonify({"status": "ignored", "message": "Hardware is active. Dropping fake data."}), 200
+
         device_id = data.get('device_id')
         methane = data.get('methane_ppm')
         co = data.get('co_ppm')

@@ -22,11 +22,14 @@ try:
                 co = random.uniform(100, 150)
                 
             payload = {
-                "device_id": device,
+                "device_id": "ESP_001",  # Send to ESP_001 so it mirrors to all mines
                 "methane_ppm": round(methane, 1),
                 "co_ppm": round(co, 1),
                 "temperature_c": round(temp, 1),
-                "humidity_percent": round(humidity, 1)
+                "humidity_percent": round(humidity, 1),
+                "smoke_ppm": round(random.uniform(1000, 3200), 1),
+                "fire_detected": False,
+                "is_simulated": True
             }
             
             try:
