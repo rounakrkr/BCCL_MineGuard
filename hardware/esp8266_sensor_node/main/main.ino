@@ -9,7 +9,7 @@
 // ===================== CONFIG =====================
 const char* WIFI_SSID     = "YOUR_WIFI_NAME";
 const char* WIFI_PASSWORD = "YOUR_WIFI_PASSWORD";
-const char* SERVER_URL    = "https://your-backend.onrender.com/api/sensor/data";
+const char* SERVER_URL    = "https://bccl-mineguard.onrender.com/api/sensor/data";
 const char* DEVICE_ID     = "ESP_001";  // Change per device
 
 // ===================== PINS =======================
@@ -37,12 +37,12 @@ bool isCommonAnode = false;
 DHT dht(DHT_PIN, DHT_TYPE);
 
 // ===================== THRESHOLDS =================
-#define METHANE_WARNING  2500
-#define METHANE_DANGER   5000
-#define CO_WARNING       50
-#define CO_DANGER        100
-#define SMOKE_WARNING    2000
-#define SMOKE_DANGER     4000
+#define METHANE_WARNING  3500
+#define METHANE_DANGER   4500
+#define CO_WARNING       300
+#define CO_DANGER        400
+#define SMOKE_WARNING    3800
+#define SMOKE_DANGER     4500
 
 // =================== SETUP =======================
 void setup() {
@@ -150,6 +150,7 @@ void sendDataToServer(float methane, float co, float smoke, bool fire, float tem
   HTTPClient http;
   
   http.begin(client, SERVER_URL);
+  http.setTimeout(15000);  // 15 second timeout for slow Cloud DB responses
   http.addHeader("Content-Type", "application/json");
   
   // Build JSON payload (including new sensors)
