@@ -15,7 +15,7 @@ def get_all_mines():
         
         # Fetch all latest readings in one query using MAX(id)
         cursor.execute("""
-            SELECT sr.mine_id, sr.methane_ppm, sr.co_ppm, sr.temperature_c, sr.humidity_percent, sr.status, sr.recorded_at 
+            SELECT sr.mine_id, sr.methane_ppm, sr.co_ppm, sr.temperature_c, sr.humidity_percent, sr.smoke_ppm, sr.fire_detected, sr.status, sr.recorded_at 
             FROM sensor_readings sr
             INNER JOIN (
                 SELECT mine_id, MAX(id) as max_id 
