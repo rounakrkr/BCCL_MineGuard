@@ -99,7 +99,7 @@ const MinePage = () => {
         {/* Data Column */}
         <div className="lg:col-span-2 space-y-6">
           {/* Gauges */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-4">
             <SensorGauge 
               type="Methane" 
               value={Number(latest.methane_ppm) || 0} 
@@ -127,6 +127,20 @@ const MinePage = () => {
               unit="%" 
               status={latest.humidity_percent >= 95 ? 'DANGER' : latest.humidity_percent >= 90 ? 'WARNING' : 'SAFE'} 
               max={100} 
+            />
+            <SensorGauge 
+              type="Smoke" 
+              value={Number(latest.smoke_ppm) || 0} 
+              unit="PPM" 
+              status={latest.smoke_ppm >= 4000 ? 'DANGER' : latest.smoke_ppm >= 3000 ? 'WARNING' : 'SAFE'} 
+              max={10000} 
+            />
+            <SensorGauge 
+              type="Fire" 
+              value={latest.fire_detected ? 1 : 0} 
+              unit="Alert" 
+              status={latest.fire_detected ? 'DANGER' : 'SAFE'} 
+              max={1} 
             />
           </div>
 

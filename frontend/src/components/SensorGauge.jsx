@@ -22,7 +22,9 @@ const SensorGauge = ({ type, value, unit, status, max }) => {
     Methane: <Wind className={`w-5 h-5 ${colorClass.split(' ')[0]}`} />,
     'Carbon Monoxide': <AlertTriangle className={`w-5 h-5 ${colorClass.split(' ')[0]}`} />,
     Temperature: <Thermometer className={`w-5 h-5 ${colorClass.split(' ')[0]}`} />,
-    Humidity: <Droplets className={`w-5 h-5 ${colorClass.split(' ')[0]}`} />
+    Humidity: <Droplets className={`w-5 h-5 ${colorClass.split(' ')[0]}`} />,
+    Smoke: <Wind className={`w-5 h-5 ${colorClass.split(' ')[0]}`} />,
+    Fire: <AlertTriangle className={`w-5 h-5 ${colorClass.split(' ')[0]}`} />
   };
 
   return (
