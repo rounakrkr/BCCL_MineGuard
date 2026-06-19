@@ -104,15 +104,15 @@ const MinePage = () => {
               type="Methane" 
               value={Number(latest.methane_ppm) || 0} 
               unit="PPM" 
-              status={latest.methane_ppm >= 5000 ? 'DANGER' : latest.methane_ppm >= 2500 ? 'WARNING' : 'SAFE'} 
+              status={latest.methane_ppm >= 4500 ? 'DANGER' : latest.methane_ppm >= 3500 ? 'WARNING' : 'SAFE'} 
               max={10000} 
             />
             <SensorGauge 
               type="Carbon Monoxide" 
               value={Number(latest.co_ppm) || 0} 
               unit="PPM" 
-              status={latest.co_ppm >= 100 ? 'DANGER' : latest.co_ppm >= 50 ? 'WARNING' : 'SAFE'} 
-              max={200} 
+              status={latest.co_ppm >= 400 ? 'DANGER' : latest.co_ppm >= 300 ? 'WARNING' : 'SAFE'} 
+              max={1000} 
             />
             <SensorGauge 
               type="Temperature" 
@@ -132,7 +132,7 @@ const MinePage = () => {
               type="Smoke" 
               value={Number(latest.smoke_ppm) || 0} 
               unit="PPM" 
-              status={latest.smoke_ppm >= 4000 ? 'DANGER' : latest.smoke_ppm >= 3000 ? 'WARNING' : 'SAFE'} 
+              status={latest.smoke_ppm >= 4500 ? 'DANGER' : latest.smoke_ppm >= 3800 ? 'WARNING' : 'SAFE'} 
               max={10000} 
             />
             <SensorGauge 

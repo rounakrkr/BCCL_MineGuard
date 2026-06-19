@@ -1,13 +1,13 @@
 THRESHOLDS = {
     "methane_ppm": {
-        "safe":    1000,
-        "warning": 2500,
-        "danger":  5000
+        "safe":    3000,
+        "warning": 3500,
+        "danger":  4500
     },
     "co_ppm": {
-        "safe":    25,
-        "warning": 50,
-        "danger":  100
+        "safe":    200,
+        "warning": 300,
+        "danger":  400
     },
     "temperature_c": {
         "safe":    30,
@@ -20,9 +20,9 @@ THRESHOLDS = {
         "danger":  95
     },
     "smoke_ppm": {
-        "safe":    2000,
-        "warning": 3000,
-        "danger":  4000
+        "safe":    3000,
+        "warning": 3800,
+        "danger":  4500
     }
 }
 
