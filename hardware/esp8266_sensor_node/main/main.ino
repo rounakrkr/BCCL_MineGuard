@@ -187,6 +187,11 @@ void sendDataToServer(float methane, float co, float smoke, bool fire, float tem
 unsigned long lastSendTime = 0;
 const unsigned long sendInterval = 10000; // 10 seconds
 
+// Global variables for non-blocking DHT
+unsigned long lastDHTReadTime = 0;
+float lastTemp = 24.0;
+float lastHum = 50.0;
+
 void loop() {
   float methane = readMethane();
   float co      = readCO();
@@ -196,14 +201,21 @@ void loop() {
   // Changing to HIGH since your module seems to output LOW when idle.
   bool fireDetected = (digitalRead(FLAME_PIN) == HIGH); 
   
-  float temp    = dht.readTemperature();
-  float hum     = dht.readHumidity();
+  unsigned long currentMillis = millis();
   
-  // Validate DHT reading
-  if (isnan(temp) || isnan(hum)) {
-    Serial.println("DHT read failed, retrying...");
-    delay(2000);
-    return;
+  // DHT11 sensors can only be read once every 2 seconds. 
+  // Reading them faster causes them to fail and freeze the loop.
+  if (currentMillis - lastDHTReadTime >= 2000 || lastDHTReadTime == 0) {
+    float temp    = dht.readTemperature();
+    float hum     = dht.readHumidity();
+    
+    if (!isnan(temp) && !isnan(hum)) {
+      lastTemp = temp;
+      lastHum = hum;
+    } else {
+      Serial.println("DHT read failed, keeping old values...");
+    }
+    lastDHTReadTime = currentMillis;
   }
   
   // Determine local status
@@ -218,18 +230,16 @@ void loop() {
   // Set LED / Buzzer in REAL-TIME
   setStatusLED(status);
   
-  unsigned long currentMillis = millis();
-  
   // Send data to backend ONLY every 10 seconds
   if (currentMillis - lastSendTime >= sendInterval || lastSendTime == 0) {
     lastSendTime = currentMillis;
     
     // Print to Serial Monitor
     Serial.printf("Methane: %.1f | CO: %.1f | Smoke: %.1f | Fire: %s | Temp: %.1f°C | Hum: %.1f%% | %s\n",
-                  methane, co, smoke, fireDetected ? "YES" : "NO", temp, hum, status.c_str());
+                  methane, co, smoke, fireDetected ? "YES" : "NO", lastTemp, lastHum, status.c_str());
                   
     // Send to backend server
-    sendDataToServer(methane, co, smoke, fireDetected, temp, hum);
+    sendDataToServer(methane, co, smoke, fireDetected, lastTemp, lastHum);
   }
   
   delay(100);  // Small delay for system stability
