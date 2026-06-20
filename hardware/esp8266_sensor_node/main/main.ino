@@ -186,7 +186,8 @@ void sendDataToServer(float methane, float co, float smoke, bool fire, float tem
   client.setSession(&session); // Restores previous SSL session to skip 5-second handshake!
   
   http.begin(client, SERVER_URL);
-  http.setReuse(true); // Keep TCP connection alive
+  // Do not use setReuse(true) as Render load balancers drop idle connections, 
+  // causing every alternate request to hang and timeout!
   http.setTimeout(5000); // 5 second timeout max
   http.addHeader("Content-Type", "application/json");
   
