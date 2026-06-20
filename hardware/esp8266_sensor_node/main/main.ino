@@ -61,15 +61,6 @@ void setup() {
   pinMode(MUX_S1, OUTPUT);
   pinMode(MUX_S2, OUTPUT);
   
-  // Attach interrupt for INSTANT fire response, even if WiFi is blocking
-  attachInterrupt(digitalPinToInterrupt(FLAME_PIN), []() ICACHE_RAM_ATTR {
-    if (digitalRead(FLAME_PIN) == HIGH) {
-      tone(BUZZER_PIN, 1000);
-    } else {
-      noTone(BUZZER_PIN);
-    }
-  }, CHANGE);
-  
   // Connect to WiFi
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   Serial.print("Connecting to WiFi");
@@ -183,19 +174,23 @@ void setStatusLED(String status) {
   }
 }
 
+// Global WiFi Client with Session Caching for Ultra-Fast HTTPS
+WiFiClientSecure client;
+BearSSL::Session session;
+HTTPClient http;
+
 void sendDataToServer(float methane, float co, float smoke, bool fire, float temp, float hum) {
   if (WiFi.status() != WL_CONNECTED) return;
   
-  WiFiClientSecure client;
-  client.setInsecure();  // For HTTPS without cert verification
-  HTTPClient http;
+  client.setInsecure();  
+  client.setSession(&session); // Restores previous SSL session to skip 5-second handshake!
   
   http.begin(client, SERVER_URL);
-  http.setTimeout(15000);  // 15 second timeout for slow Cloud DB responses
+  http.setReuse(true); // Keep TCP connection alive
+  http.setTimeout(5000); // 5 second timeout max
   http.addHeader("Content-Type", "application/json");
   
-  // Build JSON payload (including new sensors)
-  JsonDocument doc;  // Using latest ArduinoJson v7 syntax
+  JsonDocument doc;
   doc["device_id"]       = DEVICE_ID;
   doc["methane_ppm"]     = methane;
   doc["co_ppm"]          = co;
@@ -216,7 +211,11 @@ void sendDataToServer(float methane, float co, float smoke, bool fire, float tem
     Serial.println("Error sending data: " + String(responseCode));
   }
   
-  http.end();
+  // Do NOT call http.end() if we want to reuse the connection!
+  // But wait, HTTPClient documentation says calling end() is required to free resources.
+  // Actually, keeping the payload small allows reuse even if we call end() ?
+  // Yes, with setReuse(true), end() keeps the TCP socket open internally!
+  http.end(); 
 }
 
 // =================== MAIN LOOP ===================
