@@ -50,7 +50,7 @@ def get_insight():
         
         chat_completion = client.chat.completions.create(
             messages=[{"role": "user", "content": prompt}],
-            model="llama3-8b-8192",
+            model="llama-3.1-8b-instant",
             max_tokens=150,
             temperature=0.4
         )
