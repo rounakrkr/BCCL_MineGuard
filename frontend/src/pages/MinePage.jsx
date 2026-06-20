@@ -150,9 +150,26 @@ const MinePage = () => {
           {/* Recent Alerts */}
           {alerts && alerts.length > 0 && (
             <div className="glass-panel overflow-hidden">
-              <div className="bg-rose-50/80 border-b border-rose-100/80 p-4 flex items-center gap-2">
-                <AlertTriangle className="w-5 h-5 text-rose-500" />
-                <h3 className="font-bold text-rose-700 text-sm tracking-wider uppercase">Critical Incident Log</h3>
+              <div className="bg-rose-50/80 border-b border-rose-100/80 p-4 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="w-5 h-5 text-rose-500" />
+                  <h3 className="font-bold text-rose-700 text-sm tracking-wider uppercase">Critical Incident Log</h3>
+                </div>
+                <button 
+                  onClick={async () => {
+                    if (window.confirm("Are you sure you want to clear all critical logs for this mine?")) {
+                      try {
+                        await import('../api').then(m => m.deleteMineAlerts(id));
+                        setAlerts([]);
+                      } catch (err) {
+                        console.error("Failed to clear alerts:", err);
+                      }
+                    }
+                  }}
+                  className="text-xs bg-white text-rose-600 hover:bg-rose-500 hover:text-white px-3 py-1.5 rounded-lg border border-rose-200 transition-colors font-semibold"
+                >
+                  Clear Logs
+                </button>
               </div>
               <ul className="divide-y divide-stone-100/50">
                 {alerts.map(alert => (

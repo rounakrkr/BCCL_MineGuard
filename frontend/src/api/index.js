@@ -7,6 +7,7 @@ const api = axios.create({
 export const getMines = () => api.get('/mines', { params: { t: new Date().getTime() } });
 export const getMineDetails = (id) => api.get(`/mines/${id}`, { params: { t: new Date().getTime() } });
 export const getMineAlerts = (id) => api.get(`/alerts/${id}`, { params: { t: new Date().getTime() } });
+export const deleteMineAlerts = (id) => api.delete(`/alerts/${id}`);
 export const getGroqInsight = (data) => api.post('/groq/insight', data);
 
 export default api;
