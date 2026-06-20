@@ -7,8 +7,8 @@
 #include <ArduinoJson.h>
 
 // ===================== CONFIG =====================
-const char* WIFI_SSID     = "YOUR_WIFI_NAME";
-const char* WIFI_PASSWORD = "YOUR_WIFI_PASSWORD";
+const char* WIFI_SSID     = "RounakKR";
+const char* WIFI_PASSWORD = "nahipata";
 const char* SERVER_URL    = "https://bccl-mineguard.onrender.com/api/sensor/data";
 const char* DEVICE_ID     = "ESP_001";  // Change per device
 
@@ -217,5 +217,5 @@ void loop() {
   // Send to backend server
   sendDataToServer(methane, co, smoke, fireDetected, temp, hum);
   
-  delay(10000);  // Send every 10 seconds
+  delay(15000);  // Send every 15 seconds to prevent server overload
 }

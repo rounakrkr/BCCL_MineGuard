@@ -23,7 +23,7 @@ const Home = () => {
 
   useEffect(() => {
     fetchMines();
-    const interval = setInterval(fetchMines, 2000);
+    const interval = setInterval(fetchMines, 15000);
     return () => clearInterval(interval);
   }, []);
 
