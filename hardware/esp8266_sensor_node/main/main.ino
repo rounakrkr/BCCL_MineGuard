@@ -119,26 +119,31 @@ void setRGBColor(int redVal, int greenVal, int blueVal) {
 }
 
 void setStatusLED(String status) {
-  // Turn off all colors and buzzer first
+  // Turn off all colors first
   setRGBColor(LOW, LOW, LOW);
-  noTone(BUZZER_PIN);
   
   if (status == "SAFE") {
     // Green
     setRGBColor(LOW, HIGH, LOW);
+    noTone(BUZZER_PIN);
   } 
   else if (status == "WARNING") {
     // Yellow (Red + Green)
     setRGBColor(HIGH, HIGH, LOW);
+    
+    // Beep every 500ms
+    if ((millis() / 500) % 2 == 0) {
+      tone(BUZZER_PIN, 1000);
+    } else {
+      noTone(BUZZER_PIN);
+    }
   } 
   else if (status == "DANGER") {
     // Red
     setRGBColor(HIGH, LOW, LOW);
     
-    // Sound buzzer
+    // Continuous buzz
     tone(BUZZER_PIN, 1000);
-    delay(500);
-    noTone(BUZZER_PIN);
   }
 }
 
@@ -179,6 +184,9 @@ void sendDataToServer(float methane, float co, float smoke, bool fire, float tem
 }
 
 // =================== MAIN LOOP ===================
+unsigned long lastSendTime = 0;
+const unsigned long sendInterval = 10000; // 10 seconds
+
 void loop() {
   float methane = readMethane();
   float co      = readCO();
@@ -207,15 +215,22 @@ void loop() {
     status = "WARNING";
   }
   
-  // Print to Serial Monitor
-  Serial.printf("Methane: %.1f | CO: %.1f | Smoke: %.1f | Fire: %s | Temp: %.1f°C | Hum: %.1f%% | %s\n",
-                methane, co, smoke, fireDetected ? "YES" : "NO", temp, hum, status.c_str());
-  
-  // Set LED / Buzzer
+  // Set LED / Buzzer in REAL-TIME
   setStatusLED(status);
   
-  // Send to backend server
-  sendDataToServer(methane, co, smoke, fireDetected, temp, hum);
+  unsigned long currentMillis = millis();
   
-  delay(15000);  // Send every 15 seconds to prevent server overload
+  // Send data to backend ONLY every 10 seconds
+  if (currentMillis - lastSendTime >= sendInterval || lastSendTime == 0) {
+    lastSendTime = currentMillis;
+    
+    // Print to Serial Monitor
+    Serial.printf("Methane: %.1f | CO: %.1f | Smoke: %.1f | Fire: %s | Temp: %.1f°C | Hum: %.1f%% | %s\n",
+                  methane, co, smoke, fireDetected ? "YES" : "NO", temp, hum, status.c_str());
+                  
+    // Send to backend server
+    sendDataToServer(methane, co, smoke, fireDetected, temp, hum);
+  }
+  
+  delay(100);  // Small delay for system stability
 }
