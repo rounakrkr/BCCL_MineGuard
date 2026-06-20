@@ -11,11 +11,11 @@ const Home = () => {
 
   const fetchMines = async () => {
     try {
-      const res = await getMines();
-      setMines(res.data.mines);
+      const response = await getMines();
+      setMines(response.data.mines);
       setLastUpdate(new Date());
-    } catch (err) {
-      console.error("Failed to fetch mines:", err);
+    } catch (error) {
+      console.error("Failed to fetch mines:", error);
     } finally {
       setLoading(false);
     }

@@ -61,6 +61,15 @@ void setup() {
   pinMode(MUX_S1, OUTPUT);
   pinMode(MUX_S2, OUTPUT);
   
+  // Attach interrupt for INSTANT fire response, even if WiFi is blocking
+  attachInterrupt(digitalPinToInterrupt(FLAME_PIN), []() ICACHE_RAM_ATTR {
+    if (digitalRead(FLAME_PIN) == HIGH) {
+      tone(BUZZER_PIN, 1000);
+    } else {
+      noTone(BUZZER_PIN);
+    }
+  }, CHANGE);
+  
   // Connect to WiFi
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   Serial.print("Connecting to WiFi");
