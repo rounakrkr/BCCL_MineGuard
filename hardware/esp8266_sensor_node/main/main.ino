@@ -118,6 +118,10 @@ void setRGBColor(int redVal, int greenVal, int blueVal) {
   }
 }
 
+bool isBuzzing = false;
+unsigned long lastBeepToggle = 0;
+bool beepState = false;
+
 void setStatusLED(String status) {
   // Turn off all colors first
   setRGBColor(LOW, LOW, LOW);
@@ -125,25 +129,39 @@ void setStatusLED(String status) {
   if (status == "SAFE") {
     // Green
     setRGBColor(LOW, HIGH, LOW);
-    noTone(BUZZER_PIN);
+    if (isBuzzing) {
+      noTone(BUZZER_PIN);
+      isBuzzing = false;
+    }
   } 
   else if (status == "WARNING") {
     // Yellow (Red + Green)
     setRGBColor(HIGH, HIGH, LOW);
     
     // Beep every 500ms
-    if ((millis() / 500) % 2 == 0) {
-      tone(BUZZER_PIN, 1000);
-    } else {
-      noTone(BUZZER_PIN);
+    if (millis() - lastBeepToggle >= 500) {
+      beepState = !beepState;
+      lastBeepToggle = millis();
+      
+      if (beepState) {
+        tone(BUZZER_PIN, 1000);
+        isBuzzing = true;
+      } else {
+        noTone(BUZZER_PIN);
+        isBuzzing = false;
+      }
     }
   } 
   else if (status == "DANGER") {
     // Red
     setRGBColor(HIGH, LOW, LOW);
     
-    // Continuous buzz
-    tone(BUZZER_PIN, 1000);
+    // Continuous buzz - ONLY call tone() if it's not already buzzing
+    // Calling tone() repeatedly in a fast loop stops it from making sound!
+    if (!isBuzzing) {
+      tone(BUZZER_PIN, 1000);
+      isBuzzing = true;
+    }
   }
 }
 
