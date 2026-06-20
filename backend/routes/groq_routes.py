@@ -9,7 +9,7 @@ client = None
 try:
     groq_api_key = os.environ.get("GROQ_API_KEY")
     if groq_api_key:
-        client = Groq(api_key=groq_api_key)
+        client = Groq(api_key=groq_api_key, timeout=8.0)
 except Exception as e:
     print(f"Error initializing Groq: {e}")
 
@@ -52,8 +52,7 @@ def get_insight():
             messages=[{"role": "user", "content": prompt}],
             model="llama3-8b-8192",
             max_tokens=150,
-            temperature=0.4,
-            timeout=8.0  # Stop hanging after 8 seconds
+            temperature=0.4
         )
         
         insight = chat_completion.choices[0].message.content
