@@ -47,7 +47,10 @@ const LiveChart = ({ data }) => {
           <XAxis 
             dataKey="recorded_at" 
             stroke="#a8a29e" 
-            tickFormatter={(tick) => new Date(tick).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            tickFormatter={(tick) => {
+              const d = new Date(tick);
+              return isNaN(d.getTime()) ? '' : d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }}
             tick={{ fontSize: 12, fill: '#a8a29e' }}
             tickMargin={12}
             axisLine={false}

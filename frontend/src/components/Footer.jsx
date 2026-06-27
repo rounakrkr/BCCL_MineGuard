@@ -32,7 +32,7 @@ const Footer = () => {
         <div className="bg-stone-200/40 px-4 py-2 rounded-full border border-stone-300/50 backdrop-blur-sm shadow-sm hover:shadow transition-shadow">
           <p className="text-[11px] font-medium text-stone-600 flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.6)]"></span>
-            Developed under the esteemed guidance of <span className="font-bold text-stone-800">Mr. Arun</span>, AGM, Bastacolla Area
+            Developed under the esteemed guidance of <span className="font-bold text-stone-800">Arun Kumar</span>, Manager(System), IT Division
           </p>
         </div>
         <div className="text-xs font-medium text-stone-500">

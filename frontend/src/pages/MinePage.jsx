@@ -104,21 +104,21 @@ const MinePage = () => {
               type="Methane" 
               value={Number(latest.methane_ppm) || 0} 
               unit="PPM" 
-              status={latest.methane_ppm >= 4500 ? 'DANGER' : latest.methane_ppm >= 3500 ? 'WARNING' : 'SAFE'} 
+              status={latest.methane_ppm >= 4500 ? 'DANGER' : latest.methane_ppm >= 3800 ? 'WARNING' : 'SAFE'} 
               max={10000} 
             />
             <SensorGauge 
               type="Carbon Monoxide" 
               value={Number(latest.co_ppm) || 0} 
               unit="PPM" 
-              status={latest.co_ppm >= 400 ? 'DANGER' : latest.co_ppm >= 300 ? 'WARNING' : 'SAFE'} 
+              status={latest.co_ppm >= 500 ? 'DANGER' : latest.co_ppm >= 400 ? 'WARNING' : 'SAFE'} 
               max={1000} 
             />
             <SensorGauge 
               type="Temperature" 
               value={Number(latest.temperature_c) || 0} 
               unit="°C" 
-              status={latest.temperature_c >= 40 ? 'DANGER' : latest.temperature_c >= 35 ? 'WARNING' : 'SAFE'} 
+              status={latest.temperature_c >= 45 ? 'DANGER' : latest.temperature_c >= 38 ? 'WARNING' : 'SAFE'} 
               max={50} 
             />
             <SensorGauge 
@@ -132,7 +132,7 @@ const MinePage = () => {
               type="Smoke" 
               value={Number(latest.smoke_ppm) || 0} 
               unit="PPM" 
-              status={latest.smoke_ppm >= 4500 ? 'DANGER' : latest.smoke_ppm >= 3800 ? 'WARNING' : 'SAFE'} 
+              status={latest.smoke_ppm >= 4200 ? 'DANGER' : latest.smoke_ppm >= 3500 ? 'WARNING' : 'SAFE'} 
               max={10000} 
             />
             <SensorGauge 
@@ -175,7 +175,7 @@ const MinePage = () => {
                 {alerts.map(alert => (
                   <li key={alert.id} className="p-4 hover:bg-white/50 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div>
-                      <p className="font-semibold text-stone-800 text-sm">{alert.alert_type.replace('_', ' ')}</p>
+                      <p className="font-semibold text-stone-800 text-sm">{(alert.alert_type || '').replace('_', ' ')}</p>
                       <p className="text-xs text-stone-500 mt-1">Value peaked at: <strong className="text-rose-500">{alert.sensor_value}</strong> (Safe Limit: {alert.threshold_value})</p>
                     </div>
                     <span className="text-xs text-stone-400 font-mono bg-white/60 px-2.5 py-1 rounded-md border border-white/80">{new Date(alert.triggered_at).toLocaleString()}</span>

@@ -14,9 +14,9 @@ const char* DEVICE_ID     = "ESP_001";  // Change per device
 
 // ===================== PINS =======================
 #define ANALOG_PIN A0    // Common analog pin connected to Multiplexer Z
-#define DHT_PIN    D4    // DHT11 data pin
-#define BUZZER_PIN D5    // Buzzer
-#define FLAME_PIN  D0    // IR Flame Sensor Digital Out
+#define DHT_PIN    D4
+#define BUZZER_PIN D5
+#define FLAME_PIN  D0
 
 // RGB LED Pins
 #define RGB_RED    D8
