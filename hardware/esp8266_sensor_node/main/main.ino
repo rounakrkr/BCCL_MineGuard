@@ -37,12 +37,12 @@ bool isCommonAnode = false;
 DHT dht(DHT_PIN, DHT_TYPE);
 
 // ===================== THRESHOLDS =================
-#define METHANE_WARNING  3500
+#define METHANE_WARNING  3800
 #define METHANE_DANGER   4500
-#define CO_WARNING       300
-#define CO_DANGER        400
-#define SMOKE_WARNING    3800
-#define SMOKE_DANGER     4500
+#define CO_WARNING       400
+#define CO_DANGER        500
+#define SMOKE_WARNING    3500
+#define SMOKE_DANGER     4200
 
 // =================== SETUP =======================
 void setup() {
